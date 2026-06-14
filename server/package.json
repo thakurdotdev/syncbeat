@@ -1,0 +1,33 @@
+{
+  "name": "syncvibe-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "format": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "Pankaj Thakur",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "connect-timeout": "^1.9.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1",
+    "express-rate-limit": "^7.5.1",
+    "ioredis": "^5.9.2",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.16.3",
+    "pg-hstore": "^2.3.4",
+    "qrcode": "^1.5.4",
+    "resend": "^4.8.0",
+    "sequelize": "^6.37.7",
+    "socket.io": "^4.8.3",
+    "uuid": "^13.0.0",
+    "yup": "^1.7.1"
+  }
+}
