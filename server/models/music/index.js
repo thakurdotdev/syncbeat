@@ -1,3 +1,4 @@
+const User = require("../auth/userModel")
 const Song = require("./Song")
 const GroupSessionHistory = require("./GroupSessionHistory")
 
@@ -11,7 +12,6 @@ GroupSessionHistory.belongsTo(Song, {
   as: "song",
 })
 
-const User = require("../auth/userModel")
 
 GroupSessionHistory.belongsTo(User, {
   foreignKey: "addedByUserId",

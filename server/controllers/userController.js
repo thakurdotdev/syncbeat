@@ -5,7 +5,6 @@ const Yup = require("yup")
 const jwt = require("jsonwebtoken")
 
 const User = require("../models/auth/userModel")
-const Follower = require("../models/auth/followerModel")
 const OTP = require("../models/auth/otpModel")
 const LoginLog = require("../models/auth/loginLogModel")
 
@@ -122,32 +121,6 @@ exports.getInviteList = async (req, res) => {
     const currentUserId = req.user.userid
     const { search } = req.query
 
-    const followingRows = await Follower.findAll({
-      where: { followerid: currentUserId },
-      attributes: ["followid"],
-      raw: true,
-    })
-    const followingIds = new Set(followingRows.map((r) => r.followid))
-
-    if (!search?.trim()) {
-      if (followingIds.size === 0) {
-        return res.status(200).json({ users: [] })
-      }
-
-      const followingUsers = await User.findAll({
-        where: {
-          userid: { [Op.in]: [...followingIds] },
-          isDeleted: false,
-        },
-        attributes: ["userid", "name", "username", "profilepic"],
-        limit: 50,
-        raw: true,
-      })
-
-      const result = followingUsers.map((u) => ({ ...u, isFollowing: true }))
-      return res.status(200).json({ users: result })
-    }
-
     const users = await User.findAll({
       where: {
         userid: { [Op.ne]: currentUserId },
@@ -159,15 +132,7 @@ exports.getInviteList = async (req, res) => {
       raw: true,
     })
 
-    const result = users
-      .map((u) => ({ ...u, isFollowing: followingIds.has(u.userid) }))
-      .sort((a, b) => {
-        if (a.isFollowing && !b.isFollowing) return -1
-        if (!a.isFollowing && b.isFollowing) return 1
-        return 0
-      })
-
-    return res.status(200).json({ users: result })
+    return res.status(200).json({ users })
   } catch (error) {
     console.error("Error fetching invite list:", error)
     return res.status(500).json({ message: "Failed to fetch users" })
