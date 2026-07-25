@@ -284,7 +284,7 @@ exports.loginUser = async (req, res) => {
     res
       .status(200)
       .cookie("token", token, {
-        domain: isProd ? ".thakur.dev" : undefined,
+        domain: isProd ? process.env.PRODUCTION_DOMAINS : undefined,
         secure: isProd,
         httpOnly: true,
         sameSite: isProd ? "none" : "lax",
@@ -400,10 +400,7 @@ exports.forgotPassword = async (req, res) => {
       { where: { userid: user.userid } },
     )
 
-    const clientUrl =
-      process.env.NODE_ENV === "production"
-        ? "https://syncvibe.thakur.dev"
-        : "http://localhost:5173"
+    const clientUrl = process.env.CLIENT_URL
 
     const resetUrl = `${clientUrl}/reset-password?token=${rawToken}&email=${encodeURIComponent(email)}`
 
