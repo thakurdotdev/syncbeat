@@ -279,19 +279,21 @@ exports.loginUser = async (req, res) => {
       { expiresIn: JWTExpiryDate },
     )
 
+    const isProd = process.env.NODE_ENV === "production";
+
     res
       .status(200)
       .cookie("token", token, {
-        domain: ".thakur.dev",
-        secure: true,
+        domain: isProd ? ".thakur.dev" : undefined,
+        secure: isProd,
         httpOnly: true,
-        sameSite: "none",
+        sameSite: isProd ? "none" : "lax",
         expires: CookieExpiryDate,
       })
-      .json({ message: "Success", token: token })
+      .json({ message: "Success", token });
 
     if (process.env.NODE_ENV === "production") {
-      ;(async () => {
+      ; (async () => {
         try {
           const ipAddress = userData?.ip
           const location = userData
