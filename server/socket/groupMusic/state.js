@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require("uuid")
+const { randomUUID } = require("node:crypto")
 
 const musicGroups = new Map()
 const userGroups = new Map()
@@ -9,8 +9,8 @@ const generateGroupId = () => {
   return `syncvibe_${id}`
 }
 
-const generateQueueItemId = () => uuidv4()
-const generateMessageId = () => uuidv4()
+const generateQueueItemId = () => randomUUID()
+const generateMessageId = () => randomUUID()
 
 const emitActivityMessage = (io, groupId, activityType, data) => {
   const group = musicGroups.get(groupId)
