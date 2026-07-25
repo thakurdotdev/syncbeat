@@ -13,7 +13,7 @@ const io = new Server(server, {
   pingInterval: 10000,
   connectTimeout: 20000,
   maxHttpBufferSize: 2e6,
-  transports: ["websocket", "polling"],
+  transports: ["websocket"],
   cors: {
     origin: true,
     credentials: true,
