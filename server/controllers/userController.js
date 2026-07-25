@@ -107,11 +107,12 @@ exports.getUserProfile = async (req, res) => {
 }
 
 exports.logoutUser = (req, res) => {
+  const isProd = process.env.NODE_ENV === "production"
   res.clearCookie("token", {
-    domain: ".thakur.dev",
-    secure: true,
+    domain: process.env.COOKIE_DOMAIN || undefined,
+    secure: isProd,
     httpOnly: true,
-    sameSite: "none",
+    sameSite: isProd ? "none" : "lax",
   })
   res.status(200).json({ message: "success" })
 }
@@ -279,18 +280,18 @@ exports.loginUser = async (req, res) => {
       { expiresIn: JWTExpiryDate },
     )
 
-    const isProd = process.env.NODE_ENV === "production";
+    const isProd = process.env.NODE_ENV === "production"
 
     res
       .status(200)
       .cookie("token", token, {
-        domain: isProd ? process.env.PRODUCTION_DOMAINS : undefined,
+        domain: process.env.COOKIE_DOMAIN || undefined,
         secure: isProd,
         httpOnly: true,
         sameSite: isProd ? "none" : "lax",
         expires: CookieExpiryDate,
       })
-      .json({ message: "Success", token });
+      .json({ message: "Success", token })
 
     if (process.env.NODE_ENV === "production") {
       ; (async () => {
