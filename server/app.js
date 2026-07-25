@@ -45,6 +45,9 @@ app.use((err, req, res, next) => {
     return res.status(408).json({ message: "Request timeout" })
   }
 
+  console.log(err);
+
+
   res.status(err.statusCode || 500).json({
     message: process.env.NODE_ENV === "production" ? "Internal server error" : err.message,
   })
