@@ -176,15 +176,6 @@ const InviteSheet = ({ isOpen, onClose, groupMembers, sendInvite }) => {
     }
   }, [])
 
-  useEffect(() => {
-    if (isOpen) {
-      fetchUsers("")
-      setInvitedUsers(new Set())
-      setSearchQuery("")
-      setHasSearched(false)
-    }
-  }, [isOpen, fetchUsers])
-
   const debouncedSearch = useMemo(() => _.debounce((query) => fetchUsers(query), 400), [fetchUsers])
 
   const handleSearchChange = useCallback(
