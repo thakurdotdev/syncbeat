@@ -3,6 +3,11 @@
   "installCommand": "pnpm install",
   "buildCommand": "pnpm build",
   "outputDirectory": "client/dist",
+  "functions": {
+    "api/**/*.js": {
+      "includeFiles": "server/**"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/:path*",

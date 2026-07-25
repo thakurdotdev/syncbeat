@@ -1,3 +1,5 @@
+require("pg")
+
 const http = require("node:http")
 const { Server } = require("socket.io")
 const app = require("../server/app")
