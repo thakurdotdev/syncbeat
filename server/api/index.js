@@ -13,6 +13,7 @@ const io = new Server(server, {
   maxHttpBufferSize: 2e6,
   transports: ["websocket", "polling"],
   cors: {
+    origin: true,
     credentials: true,
   },
 })

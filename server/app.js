@@ -1,7 +1,7 @@
 const express = require("express")
-const cors = require("cors")
 const cookieParser = require("cookie-parser")
 const timeout = require("connect-timeout")
+const cors = require("cors")
 
 const userRouter = require("./routes/userRoutes")
 const musicRoutes = require("./routes/musicRoutes")
@@ -14,18 +14,7 @@ app.use(timeout("30s"))
 
 app.use(
   cors({
-    origin: (origin, cb) => {
-      if (
-        !origin ||
-        origin === "https://syncvibe.thakur.dev" ||
-        origin === "http://localhost:5173" ||
-        /^https:\/\/([a-z0-9-]+\.)*thakur\.dev$/.test(origin)
-      ) {
-        cb(null, true)
-      } else {
-        cb(new Error("Blocked by CORS"))
-      }
-    },
+    origin: true,
     credentials: true,
   }),
 )
