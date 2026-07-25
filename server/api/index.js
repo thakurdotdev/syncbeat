@@ -20,6 +20,10 @@ const io = new Server(server, {
 
 socketManager(io)
 
+app.all("/socket.io*", (req, res) => {
+  io.engine.handleRequest(req, res)
+})
+
 let isDbConnected = false
 app.use(async (req, res, next) => {
   if (!isDbConnected) {

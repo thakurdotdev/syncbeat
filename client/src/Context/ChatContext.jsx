@@ -54,7 +54,7 @@ export const ChatProvider = ({ children }) => {
 
     if (socketRef.current?.connected) return
 
-    const newSocket = io(import.meta.env.VITE_API_URL, {
+    const newSocket = io(import.meta.env.VITE_API_URL || undefined, {
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,

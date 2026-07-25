@@ -20,6 +20,10 @@ const io = new Server(server, {
 
 socketManager(io)
 
+app.all("/socket.io*", (req, res) => {
+  io.engine.handleRequest(req, res)
+})
+
 sequelize.authenticate().then(() => {
   const port = process.env.PORT || 4000
   server.listen(port, () => {
