@@ -228,7 +228,11 @@ exports.registerUser = async (req, res) => {
   }
 }
 
-exports.loginUser = async (req, res) => {
+/**
+ * Login handler. With adminOnly (the separate admin login page) only accounts with
+ * role "admin" can sign in; everyone else is refused before a cookie is set.
+ */
+const createLoginHandler = ({ adminOnly }) => async (req, res) => {
   try {
     await loginValidationSchema.validate(req.body)
     const { email, password, userData } = req.body
@@ -244,6 +248,7 @@ exports.loginUser = async (req, res) => {
         "profilepic",
         "bio",
         "verified",
+        "role",
         "isDeleted",
         "twoFactorEnabled",
       ],
@@ -257,6 +262,10 @@ exports.loginUser = async (req, res) => {
       return res.status(401).json({ message: "Account has been deleted or banned" })
     }
 
+    if (adminOnly && user.role !== "admin") {
+      return res.status(403).json({ message: "This account does not have admin access" })
+    }
+
     if (user.twoFactorEnabled) {
       return res.status(200).json({
         message: "2FA required",
@@ -268,7 +277,7 @@ exports.loginUser = async (req, res) => {
     const token = jwt.sign(
       {
         userid: user.userid,
-        role: "user",
+        role: user.role || "user",
         name: user.name,
         username: user.username,
         email: user.email,
@@ -307,7 +316,7 @@ exports.loginUser = async (req, res) => {
             browser: browserName || "Unknown",
             os: osName || "Unknown",
             location: location || "Unknown",
-            loginType: "Using Password",
+            loginType: adminOnly ? "Admin Password" : "Using Password",
             userid: user.userid,
           })
         } catch (error) {
@@ -316,10 +325,16 @@ exports.loginUser = async (req, res) => {
       })()
     }
   } catch (error) {
+    if (error instanceof Yup.ValidationError) {
+      return res.status(400).json({ message: error.message })
+    }
     console.error("Login error:", error)
     return res.status(500).json({ message: "An error occurred during login" })
   }
 }
+
+exports.loginUser = createLoginHandler({ adminOnly: false })
+exports.adminLogin = createLoginHandler({ adminOnly: true })
 
 exports.getLoginLogs = async (req, res) => {
   try {

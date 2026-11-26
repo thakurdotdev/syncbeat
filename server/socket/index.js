@@ -1,9 +1,11 @@
 const { setupGroupMusicHandlers, handleUserDisconnect } = require("./groupMusic")
 const { setupOnlineHandlers } = require("./online")
+const { registry, setIO } = require("./registry")
 
 const socketManager = (io) => {
+  setIO(io)
   const userSockets = new Map()
-  const onlineUsers = new Set()
+  const onlineUsers = registry.onlineUsers
 
   const context = {
     userSockets,

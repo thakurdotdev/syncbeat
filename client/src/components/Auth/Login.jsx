@@ -7,6 +7,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
 import * as yup from "yup"
 import { useProfile } from "@/Context/Context"
+import { homePathFor } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
@@ -30,7 +31,7 @@ const Login = () => {
   const [userData, setUserData] = useState({})
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const returnPath = searchParams.get("returnTo") || "/music"
+  const returnTo = searchParams.get("returnTo")
 
   const form = useForm({
     resolver: yupResolver(validationSchema),
@@ -42,9 +43,10 @@ const Login = () => {
 
   useEffect(() => {
     if (!loadingPro && user?.email) {
-      navigate(returnPath)
+      // Admins go to the admin portal unless they were sent here from a specific page
+      navigate(returnTo || homePathFor(user))
     }
-  }, [loadingPro, user, navigate, returnPath])
+  }, [loadingPro, user, navigate, returnTo])
 
   useEffect(() => {
     getUserData()
@@ -76,8 +78,8 @@ const Login = () => {
       )
 
       if (response.status === 200) {
+        // The effect above redirects once the profile (and role) has loaded
         getProfile()
-        navigate(returnPath)
         toast.success("Logged in successfully")
       }
     } catch (error) {
@@ -174,12 +176,18 @@ const Login = () => {
           <div className="text-sm text-center text-muted-foreground">
             Don't have an account?{" "}
             <Link
-              to={`/register?returnTo=${encodeURIComponent(returnPath)}`}
+              to={returnTo ? `/register?returnTo=${encodeURIComponent(returnTo)}` : "/register"}
               className="text-primary underline-offset-4 hover:underline"
             >
               Register
             </Link>
           </div>
+          <Link
+            to="/admin/login"
+            className="text-center text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          >
+            Admin? Sign in to the admin portal
+          </Link>
           {/* <Button
             variant="outline"
             onClick={() => {

@@ -20,6 +20,34 @@ class Song extends Model {
     )
   }
 
+  /**
+   * Builds a song object in the same shape the music API returns, so admin-created
+   * songs play through the existing player without any special cases.
+   */
+  static buildSongData({ id, name, artists, album, language, duration, audioUrl, coverUrl }) {
+    const artistList = String(artists || "")
+      .split(",")
+      .map((a) => a.trim())
+      .filter(Boolean)
+      .map((artistName) => ({ name: artistName, role: "singer", type: "artist" }))
+
+    return {
+      id,
+      name,
+      type: "song",
+      source: "admin",
+      album: album || "",
+      language: language || "unknown",
+      duration: Number(duration) || 0,
+      artist_map: { primary_artists: artistList, artists: artistList },
+      image: ["50x50", "150x150", "500x500"].map((quality) => ({ quality, link: coverUrl })),
+      download_url: ["12kbps", "48kbps", "96kbps", "160kbps", "320kbps"].map((quality) => ({
+        quality,
+        link: audioUrl,
+      })),
+    }
+  }
+
   static async getOrCreate(songData) {
     if (!songData?.id) throw new Error("songData.id is required")
 
@@ -102,6 +130,23 @@ Song.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       comment: "Duration in seconds",
+    },
+    source: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      defaultValue: "external",
+      comment: "external (cached from the music API) | admin (added by an admin via links)",
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      comment: "Hidden songs are excluded from the catalogue and charts",
+    },
+    createdBy: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: "Admin userid that created the song (admin songs only)",
     },
     songData: {
       type: DataTypes.JSONB,

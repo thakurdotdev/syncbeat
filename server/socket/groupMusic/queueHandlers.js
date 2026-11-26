@@ -9,6 +9,7 @@ const {
   getQueueState,
 } = require("./queue");
 const { Song, GroupSessionHistory } = require("../../models/music");
+const { recordPlay } = require("../../services/songService");
 
 const persistSongHistory = async (group, queueItem) => {
   if (!queueItem?.song?.id) return;
@@ -24,6 +25,9 @@ const persistSongHistory = async (group, queueItem) => {
         : null,
       playedAt: new Date(),
     });
+    // Everyone listening in the group gets the song in their "Recent" list
+    const memberIds = (group.members || []).map((m) => m.userId);
+    await recordPlay(memberIds, songRecord);
   } catch (err) {
     console.error("[GroupHistory] Failed to persist:", err.message);
   }

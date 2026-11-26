@@ -13,6 +13,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useAddToPlaylistStore } from "@/stores/addToPlaylistStore"
 import { useGroupSessionStore } from "@/stores/groupMusic/sessionStore"
 import Discovery from "./QueueSheet/Discovery"
 import QueueList from "./QueueSheet/QueueList"
@@ -55,8 +56,6 @@ const QueueSheet = () => {
   const [recsLoading, setRecsLoading] = useState(false)
   const [recsSourceName, setRecsSourceName] = useState("")
   const [activeTab, setActiveTab] = useState("queue")
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false)
-  const [saveDialogSong, setSaveDialogSong] = useState(null)
   const [recsLockedSongId, setRecsLockedSongId] = useState(null)
 
   useEffect(() => {
@@ -99,8 +98,7 @@ const QueueSheet = () => {
   )
 
   const handleSaveToPlaylist = useCallback((song) => {
-    setSaveDialogSong(song)
-    setSaveDialogOpen(true)
+    useAddToPlaylistStore.getState().open(song)
   }, [])
 
   const fetchRecs = useCallback(async (songId, force = false) => {
