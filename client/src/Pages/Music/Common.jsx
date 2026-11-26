@@ -1,4 +1,3 @@
-import axios from "axios"
 import { Loader2 } from "lucide-react"
 
 export const formatTime = (time) => {
@@ -58,20 +57,5 @@ export const ensureHttpsForDownloadUrls = (song) => {
     ...song,
     download_url: updatedDownloadUrls,
     image: updatedArtworkUrls,
-  }
-}
-
-export const addToHistory = async (songData, playedTime, trackingType) => {
-  try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/history/add`,
-      { songData, playedTime, trackingType },
-      { withCredentials: true },
-    )
-
-    if (response.status === 200) {
-    }
-  } catch (error) {
-    console.error("Error adding to history:", error)
   }
 }

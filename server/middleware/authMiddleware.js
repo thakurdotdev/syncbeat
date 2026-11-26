@@ -20,6 +20,10 @@ const authMiddleware = async (req, res, next) => {
       return res.status(401).json({ error: "Unauthorized: User not found" })
     }
 
+    if (existingUser.isDeleted) {
+      return res.status(403).json({ error: "Your account has been banned", code: "BANNED" })
+    }
+
     req.user = existingUser
     next()
   } catch (error) {

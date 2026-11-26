@@ -23,9 +23,7 @@ export const ContextProvider = ({ children }) => {
     queryClient.setQueryData(profileKeys.current(), newUser)
   }
 
-  const getProfile = () => {
-    refetch()
-  }
+  const getProfile = () => refetch()
 
   const memoizedValue = useMemo(
     () => ({

@@ -17,6 +17,7 @@ import {
   Search,
   ChevronRight,
 } from "lucide-react"
+import LikeButton from "@/components/music/LikeButton"
 import { useGroupSessionStore } from "@/stores/groupMusic/sessionStore"
 
 const REACTIONS = ["🔥", "❤️", "👏", "😍", "🎵"]
@@ -251,7 +252,12 @@ const NowPlayingCard = ({
           <div className="flex-1 min-w-0 flex flex-col justify-center">
             <AnimatePresence mode="wait">
               <motion.div key={currentSong.id} {...SONG_FADE}>
-                <h3 className="text-sm font-bold line-clamp-2 leading-snug">{currentSong.name}</h3>
+                <div className="flex items-start gap-1">
+                  <h3 className="text-sm font-bold line-clamp-2 leading-snug flex-1">
+                    {currentSong.name}
+                  </h3>
+                  <LikeButton song={currentSong} className="-mt-1.5" />
+                </div>
                 <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{artist}</p>
               </motion.div>
             </AnimatePresence>
@@ -401,9 +407,12 @@ const NowPlayingCard = ({
           <div className="flex-1 min-w-0 flex flex-col justify-center">
             <AnimatePresence mode="wait">
               <motion.div key={currentSong.id} {...SONG_FADE}>
-                <h3 className="text-2xl lg:text-3xl font-bold tracking-tight line-clamp-1">
-                  {currentSong.name}
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-2xl lg:text-3xl font-bold tracking-tight line-clamp-1">
+                    {currentSong.name}
+                  </h3>
+                  <LikeButton song={currentSong} size="h-5 w-5" className="h-9 w-9" />
+                </div>
                 <div className="flex items-center gap-2 mt-1">
                   <p className="text-sm text-muted-foreground line-clamp-1">{artist}</p>
                   {addedBy && (

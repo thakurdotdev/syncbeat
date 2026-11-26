@@ -34,6 +34,12 @@ User.init(
       type: DataTypes.STRING(500),
       allowNull: true,
     },
+    role: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      defaultValue: "user",
+      comment: "user | admin",
+    },
     verified: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
