@@ -10,7 +10,7 @@ const LoginLog = require("../models/auth/loginLogModel")
 
 const { resendOtp, verifiedMailSender, passwordResetMailSender } = require("../utils/resend")
 const { SALT_ROUNDS, OTP_EXPIRY_MINUTES } = require("../config/constants")
-const { parseUserAgent } = require("../utils/helpers")
+const { parseUserAgent, getClientIp, getGeoLocation } = require("../utils/helpers")
 const { JWTExpiryDate, CookieExpiryDate } = require("../constant")
 
 const RESET_TOKEN_EXPIRY_MS = 60 * 60 * 1000
@@ -235,7 +235,7 @@ exports.registerUser = async (req, res) => {
 const createLoginHandler = ({ adminOnly }) => async (req, res) => {
   try {
     await loginValidationSchema.validate(req.body)
-    const { email, password, userData } = req.body
+    const { email, password } = req.body
 
     const user = await User.findOne({
       where: { email },
@@ -302,28 +302,25 @@ const createLoginHandler = ({ adminOnly }) => async (req, res) => {
       })
       .json({ message: "Success", token })
 
-    if (process.env.NODE_ENV === "production") {
-      ; (async () => {
-        try {
-          const ipAddress = userData?.ip
-          const location = userData
-            ? `${userData?.city}, ${userData?.region}, ${userData?.country}`
-            : null
-          const [browserName, osName] = parseUserAgent(req)
+    // Record the login after responding; everything is read from the request on the server
+    ;(async () => {
+      try {
+        await User.update({ lastLogin: new Date() }, { where: { userid: user.userid } })
 
-          await LoginLog.create({
-            ipaddress: ipAddress || req.header("x-forwarded-for"),
-            browser: browserName || "Unknown",
-            os: osName || "Unknown",
-            location: location || "Unknown",
-            loginType: adminOnly ? "Admin Password" : "Using Password",
-            userid: user.userid,
-          })
-        } catch (error) {
-          console.error("Login log error:", error)
-        }
-      })()
-    }
+        if (process.env.NODE_ENV !== "production") return
+        const [browserName, osName] = parseUserAgent(req)
+        await LoginLog.create({
+          ipaddress: getClientIp(req),
+          browser: browserName,
+          os: osName,
+          location: getGeoLocation(req),
+          loginType: adminOnly ? "Admin Password" : "Using Password",
+          userid: user.userid,
+        })
+      } catch (error) {
+        console.error("Login log error:", error)
+      }
+    })()
   } catch (error) {
     if (error instanceof Yup.ValidationError) {
       return res.status(400).json({ message: error.message })

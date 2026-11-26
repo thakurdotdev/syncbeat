@@ -28,7 +28,6 @@ const Login = () => {
   const { user, loading: loadingPro, getProfile } = useProfile()
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [userData, setUserData] = useState({})
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const returnTo = searchParams.get("returnTo")
@@ -48,32 +47,12 @@ const Login = () => {
     }
   }, [loadingPro, user, navigate, returnTo])
 
-  useEffect(() => {
-    getUserData()
-  }, [])
-
-  const getUserData = async () => {
-    try {
-      const data = await axios.get(
-        `https://ipinfo.io/json?token=${import.meta.env.VITE_IPINFO_TOKEN}`,
-      )
-      if (data.status === 200) {
-        setUserData(data.data)
-      }
-    } catch (error) {
-      console.debug("Failed to fetch IP info:", error)
-    }
-  }
-
   const handleFormSubmit = async (data) => {
     setLoading(true)
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/login`,
-        {
-          ...data,
-          userData: userData,
-        },
+        data,
         { withCredentials: true },
       )
 

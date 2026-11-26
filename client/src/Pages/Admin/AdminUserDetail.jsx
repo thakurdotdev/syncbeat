@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useProfile } from "@/Context/Context"
 import { useAdminUser, useUpdateAdminUser } from "@/hooks/queries/useAdminQueries"
+import { loginDevice, loginIp, loginLocation } from "@/lib/loginLog"
 import { getSongArtists, getSongCover, plural } from "@/lib/song"
 import { getProfileCloudinaryUrl } from "@/Utils/Cloudinary"
 import { TimeAgo } from "@/Utils/TimeAgo"
@@ -206,9 +207,12 @@ const AdminUserDetail = () => {
               {data.loginLogs.map((log) => (
                 <li key={log.loginlogid} className="flex justify-between gap-3 py-2">
                   <span className="truncate">
-                    {log.browser} on {log.os}
+                    {loginDevice(log)}
                     <span className="block truncate text-xs text-muted-foreground">
-                      {log.location} · {log.ipaddress}
+                      {[loginLocation(log) || "Location unknown", loginIp(log)]
+                        .filter(Boolean)
+                        .join(" · ")}
+                      {log.loginType === "Admin Password" && " · admin login"}
                     </span>
                   </span>
                   <span className="shrink-0 text-xs text-muted-foreground">{TimeAgo(log.createdAt)}</span>
