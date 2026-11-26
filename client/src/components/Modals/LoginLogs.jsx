@@ -3,6 +3,7 @@ import { Clock, Globe, Monitor, MapPin, Shield, Check, AlertTriangle } from "luc
 import { TimeAgo } from "../../Utils/TimeAgo"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog"
 import { ScrollArea } from "../ui/scroll-area"
+import { loginDevice, loginIp, loginLocation } from "@/lib/loginLog"
 import { cn } from "@/lib/utils"
 import { ShieldCheck } from "lucide-react"
 
@@ -13,7 +14,7 @@ const LoginLogItem = ({ log }) => {
   }
 
   const suspicious = isSuspiciousLogin(log)
-  const deviceInfo = `${log?.browser || "Unknown"} ${log?.os ? `• ${log?.os}` : ""}`
+  const deviceInfo = loginDevice(log)
 
   return (
     <div
@@ -52,11 +53,11 @@ const LoginLogItem = ({ log }) => {
           </div>
           <div className="flex items-center space-x-2">
             <Globe className="h-4 w-4 text-muted-foreground" />
-            <span>{log.ipaddress || "Unknown"}</span>
+            <span>{loginIp(log) || "Unknown IP"}</span>
           </div>
           <div className="flex items-center space-x-2">
             <MapPin className="h-4 w-4 text-muted-foreground" />
-            <span>{log.location || "Unavailable"}</span>
+            <span>{loginLocation(log) || "Location unknown"}</span>
           </div>
         </div>
       </div>
